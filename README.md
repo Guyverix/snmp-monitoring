@@ -55,6 +55,7 @@ iso.3.6.1.4.1.30911.666.2 = INTEGER: 2345
 iso.3.6.1.4.1.30911.666.3 = STRING: "test string 03"
 iso.3.6.1.4.1.30911.666.4 = Counter32: 123434556
 iso.3.6.1.4.1.30911.666.5 = IpAddress: 192.168.15.204
+iso.3.6.1.4.1.30911.666.7 = STRING: "testing getnext with gaps in the file structure"
 ```
 ## Versioning
 
