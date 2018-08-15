@@ -32,15 +32,18 @@ test against the default test OID
 
 /opt/snmp-monitoring/bin/snmp_drop_oid.sh -g 1.3.6.1.4.1.30911.666.0
 
-snmpwalk -v 2c -c public localhost 1.3.6.1.4.1.30911.666.0
+snmpget -v 2c -c public localhost 1.3.6.1.4.1.30911.666.0
 * It is STRONGLY recommended to never use public for your community string.
 
 test from a remote machine
 
-snmpwalk -v 2c -c public 'remote IP' 1.3.6.1.4.1.30911.666.0
+snmpget -v 2c -c public 'remote IP' 1.3.6.1.4.1.30911.666.0
 
 Begin creating new files either with your application, or using the drop_oid script
 
+snmp_drop_oid.sh -x -s "1.3.6.1.4.1.30911.666.0 string Default Test"
+
+It is important to note that an snmpwalk is a modified snmpgetnext command.  It behaves badly with this script.  It is suggested that snmpget to be the most common way of retreiving data.
 
 ## Contributing
 
