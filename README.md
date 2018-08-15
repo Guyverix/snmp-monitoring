@@ -45,13 +45,9 @@ snmp_drop_oid.sh -x -s "1.3.6.1.4.1.30911.666.0 string Default Test"
 
 It is important to note that an snmpwalk is a modified snmpgetnext command.  It behaves badly with this script.  It is suggested that snmpget to be the most common way of retreiving data.
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+I use whatever comes to mind for my versioning.  In general master will be the "blessed" version..
 
 ## Authors
 
