@@ -66,6 +66,10 @@ EOF
 #       RETURNS:  none
 #===============================================================================
 sset() {
+local OID=$1
+local D_TYPE=$2
+local VAL=$3
+
 echo "${OID}"     > ${O_PATH}/${PREFIX}${OID}
 echo "${D_TYPE}" >> ${O_PATH}/${PREFIX}${OID}
 echo "${VAL}"    >> ${O_PATH}/${PREFIX}${OID}
@@ -83,7 +87,7 @@ local match=`ls ${O_PATH}/${PREFIX}${OID} 2>/dev/null`
 if [[ -z ${match} ]];then
   JUNK=0
 else 
-  echo "${OID}"
+#  echo "${OID}"
   cat ${match}
 fi
 }
@@ -121,16 +125,18 @@ TYPE='get'
 O_PATH='/opt/snmp-monitoring/data'
 PREFIX='oid'
 
-while getopts "xhg:n:p:f:" OPTION
+while getopts "xhg:s:n:p:f:" OPTION
 do
   case ${OPTION} in
     h) usage; exit 0                 ;;
     x) set -x                        ;;
     f) PREFIX="${OPTARG}"            ;;
-    s) if [ "${OPTARG}" == "0" ]; then exit 0 ; fi
-       OID=`echo "${OPTARG}" | awk '{print $1}'`
-       D_TYPE=`echo "${OPTARG}" | awk '{print $2}'`
-       VAL=`echo "${OPTARG}" | sed "s|.*.${D_TYPE}||"`
+    s) if [ "${OPTARG}" == "0" ]; then 
+         exit 0 
+       fi
+       OID=$(echo "${OPTARG}" | awk '{print $1}');
+       D_TYPE=$(echo "${OPTARG}" | awk '{print $2}')
+       VAL=$(echo "${OPTARG}" | sed "s|.*.${D_TYPE}\ ||")
        TYPE='sset'                   ;;
     p) O_PATH="${OPTARG}"            ;;
     g) TYPE='get';  OID="${OPTARG}"  ;;
@@ -147,8 +153,9 @@ fi
 # Could have been called in the origional case statement, but 
 # would not have been as clear in the code.
 
+
 case ${TYPE} in
-  sset)  sset "${OID}" "${D_TYPE}" "${VAL}" ;;
+  sset) sset "${OID}" "${D_TYPE}" "${VAL}" ;;
   get)  get  "${OID}" ;;
   next) next "${OID}" ;; 
 esac
