@@ -103,6 +103,12 @@ next() {
 # local match=`ls ${O_PATH}/${PREFIX}${OID}.* 2>/dev/null | head -1`
 
 local match=`ls ${O_PATH}/${PREFIX}${OID}.* 2>/dev/null`
+local files=$(find -type f ${O_PATH} -name "${PREFIX}${OID}")
+
+if [ -e ${O_PATH}/${PREFIX}${OID} ];then
+  # It is implied that we have a valid file of somekind
+
+
 if [[ -z ${match} ]];then
   JUNK=0
 else 
@@ -129,7 +135,7 @@ while getopts "xhg:s:n:p:f:" OPTION
 do
   case ${OPTION} in
     h) usage; exit 0                 ;;
-    x) set -x                        ;;
+    x) export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'; set -v ; set -x ;;
     f) PREFIX="${OPTARG}"            ;;
     s) if [ "${OPTARG}" == "0" ]; then 
          exit 0 
