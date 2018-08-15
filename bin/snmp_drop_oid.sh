@@ -94,42 +94,50 @@ fi
 
 #===  FUNCTION  ================================================================
 #          NAME:  next
-#   DESCRIPTION:  Get all matches of an OID (snmpwalk)
+#   DESCRIPTION:  Get all matches of an OID (snmpgetnext value)
 #    PARAMETERS:  OID number
 #       RETURNS:  OID / TYPE / DATA
 #===============================================================================
 next() {
-# Only gives one result in a walk
-# local match=`ls ${O_PATH}/${PREFIX}${OID}.* 2>/dev/null | head -1`
+# Only gives one result in a walk or a getnext!
 
-local match=`ls ${O_PATH}/${PREFIX}${OID}.* 2>/dev/null`
-local files=$(find -type f ${O_PATH} -name "${PREFIX}${OID}")
+# What are we starting with?
+local OID=${1}
 
-if [ -e ${O_PATH}/${PREFIX}${OID} ];then
-  # It is implied that we have a valid file of somekind
+# Next in the file system (may NOT be a concurrent number)
+local nextOid=$(ls ${O_PATH} | grep -A1 ${OID} | head -2 | tail -1 | sed 's/oid//')
 
+# Do we even have another OID to return?
+if [ -z ${nextOid} ];then
+  return
 
-if [[ -z ${match} ]];then
-  JUNK=0
-else 
-  IFS=$'\n'
-  for x in `echo -e "${match}"` ;do
-    local L_OID=`echo "${x}" | sed "s|.*.${PREFIX}||"`
-    echo "${L_OID}"
-    cat ${x}
-  done
+# the oids match, we did not increment.  Nothing new
+# exit out with no results
+elif [[ "${nextOid}" == "${OID}" ]] ;then
+  return
+# We have somthing different than the origional OID value.
+# Return the data now
+
+else
+  # Only actually return something if we really do have a file
+  if [[ -e ${O_PATH}/${PREFIX}${nextOid} ]];then
+    cat "${O_PATH}/${PREFIX}${nextOid}"
+  fi
 fi
+# Catchall return nothing
+return
 }
 
 #===  GETOPTS  =================================================================
 #          NAME:  getopts
 #   DESCRIPTION:  Not a function.  Get the options from the command args
 #    PARAMETERS:  as defined
-#       RETURNS:  nothing by default.  Variable declaration
+#       RETURNS:  nothing by default.  Global variable declarations
 #===============================================================================
 TYPE='get'
 O_PATH='/opt/snmp-monitoring/data'
 PREFIX='oid'
+DEF_OID='.1.3.6.1.4.1.30911'
 
 while getopts "xhg:s:n:p:f:" OPTION
 do
@@ -142,15 +150,18 @@ do
        fi
        OID=$(echo "${OPTARG}" | awk '{print $1}');
        D_TYPE=$(echo "${OPTARG}" | awk '{print $2}')
-       VAL=$(echo "${OPTARG}" | sed "s|.*.${D_TYPE}\ ||")
+       VAL=$(echo "${OPTARG}")
+       CVAL=$(echo ${VAL} | awk '{print $1(NF>1? FS $2 : "")}')
+       VAL=$(echo ${VAL} | sed "s|${CVAL} ||")
        TYPE='sset'                   ;;
     p) O_PATH="${OPTARG}"            ;;
     g) TYPE='get';  OID="${OPTARG}"  ;;
     n) TYPE='next'; OID="${OPTARG}"  ;;
-    *) echo -e ".1.3.6.1.4.1.30911\nstring\nIncorrect arguments passed to script"; exit 0 ;;
+    *) echo -e "${DEF_OID}\nstring\nIncorrect arguments passed to script"; exit 0 ;;
   esac
 done
 
+# Make sure we are not pulling grud out of the filesystem
 if [[ ! "${OID}" =~ "^\..*" ]];then
   OID=".${OID}"
   OID=$(echo "${OID}" | sed 's|\.\.|\.|')
