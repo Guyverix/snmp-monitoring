@@ -45,6 +45,17 @@ snmp_drop_oid.sh -x -s "1.3.6.1.4.1.30911.666.# string Default Test"
 
 It is important to note that an snmpwalk is a modified snmpgetnext command.  Because of this, if you have sparse array values the script SHOULD work as expected, but minimal testing has been done.
 
+To test SNMPWALK / SNMPGETNEXT
+
+Create your sub-oid values as shown above and then walk it
+```
+snmpwalk -v2c -c COMMUNITY IP_ADDRESS 1.3.6.1.4.1.30911.666
+iso.3.6.1.4.1.30911.666.1 = Gauge32: 12
+iso.3.6.1.4.1.30911.666.2 = INTEGER: 2345
+iso.3.6.1.4.1.30911.666.3 = STRING: "test string 03"
+iso.3.6.1.4.1.30911.666.4 = Counter32: 123434556
+iso.3.6.1.4.1.30911.666.5 = IpAddress: 192.168.15.204
+```
 ## Versioning
 
 I use whatever comes to mind for my versioning.  I have kinda been a bit sloppy in how I do my version work.  If you look at the bash scripts themselves, they have a version and a revision name.  Revision starts with womens names beginning with the letter A, and goes up to the letter M.  At M, then the Version number will likely increment depending on how many changes have been done to the script.  (feel free to hate, Mary is my wifes name. so M is the final point in figuring out if I need a version increase :P)
