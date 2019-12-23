@@ -105,7 +105,17 @@ next() {
 local OID=${1}
 
 # Next in the file system (may NOT be a concurrent number)
-local nextOid=$(ls ${O_PATH} | grep -A1 ${OID} | head -2 | tail -1 | sed 's/oid//')
+
+# Old version:
+#local nextOid=$(ls ${O_PATH} | grep -A1 ${OID} | head -2 | tail -1 | sed 's/oid//')
+# found and fixed by amoruck!
+if [[ -e ${O_PATH}/${PREFIX}${OID} ]];then
+    # Next in the file system (may NOT be a concurrent number)
+    local nextOid=$(ls ${O_PATH} | grep -A1 ${OID} | head -2 | tail -1 | sed 's/oid//')
+else
+    local nextOid=$(ls ${O_PATH} | grep ${OID} | head -1 | sed 's/oid//')
+fi
+
 
 # Do we even have another OID to return?
 if [ -z ${nextOid} ];then
